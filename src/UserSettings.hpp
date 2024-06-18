@@ -41,6 +41,7 @@ struct UserSettings final
 			IsRayTraced != prev.IsRayTraced ||
 			AccumulateRays != prev.AccumulateRays ||
 			NumberOfBounces != prev.NumberOfBounces ||
+			NumberOfSamples != prev.NumberOfSamples ||
 			FieldOfView != prev.FieldOfView ||
 			Aperture != prev.Aperture ||
 			FocusDistance != prev.FocusDistance;

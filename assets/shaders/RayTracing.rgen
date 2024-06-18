@@ -17,6 +17,18 @@ layout(binding = 3) readonly uniform UniformBufferObjectStruct { UniformBufferOb
 layout(location = 0) rayPayloadEXT RayPayload Ray;
 
 
+#define _epsilon_ 0.0000152587890625F
+
+//-------------------------------------------------------------------------------------------------
+// Avoiding self intersections
+//-----------------------------------------------------------------------
+vec3 offset_ray(in vec3 p, in vec3 n)
+{
+  precise vec3 offsetPoint = fma(n, vec3(_epsilon_ * length(p)), p);
+
+  return offsetPoint;
+}
+
 void main() 
 {
 	const uint64_t clock = Camera.ShowHeatmap ? clockARB() : 0;
@@ -24,8 +36,9 @@ void main()
 	// Initialise separate random seeds for the pixel and the rays.
 	// - pixel: we want the same random seed for each pixel to get a homogeneous anti-aliasing.
 	// - ray: we want a noisy random seed, different for each pixel.
-	uint pixelRandomSeed = Camera.RandomSeed;
-	Ray.RandomSeed = InitRandomSeed(InitRandomSeed(gl_LaunchIDEXT.x, gl_LaunchIDEXT.y), Camera.TotalNumberOfSamples);
+	Ray.RandomSeed = InitRandomSeed(gl_LaunchIDEXT.x, gl_LaunchIDEXT.y, Camera.frameNum);
+	uvec4 pixelRandomSeed = Ray.RandomSeed;
+	pixelRandomSeed.w = Camera.RandomSeed;
 
 	vec3 pixelColor = vec3(0);
 
@@ -74,7 +87,7 @@ void main()
 			}
 
 			// Trace hit.
-			origin = origin + t * direction;
+			origin = vec4(offset_ray(origin.xyz + t * direction.xyz, Ray.ScatterDirection.xyz), 0);
 			direction = vec4(Ray.ScatterDirection.xyz, 0);
 		}
 

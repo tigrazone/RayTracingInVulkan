@@ -48,9 +48,10 @@ Assets::UniformBufferObject RayTracer::GetUniformBufferObject(const VkExtent2D e
 	ubo.Aperture = userSettings_.Aperture;
 	ubo.FocusDistance = userSettings_.FocusDistance;
 	ubo.TotalNumberOfSamples = totalNumberOfSamples_;
+	ubo.frameNum = frameNum_;
 	ubo.NumberOfSamples = numberOfSamples_;
 	ubo.NumberOfBounces = userSettings_.NumberOfBounces;
-	ubo.RandomSeed = 1;
+	ubo.RandomSeed = rand();
 	ubo.HasSky = init.HasSky;
 	ubo.ShowHeatmap = userSettings_.ShowHeatmap;
 	ubo.HeatmapScale = userSettings_.HeatmapScale;
@@ -129,6 +130,7 @@ void RayTracer::DrawFrame()
 		!userSettings_.AccumulateRays)
 	{
 		totalNumberOfSamples_ = 0;
+		frameNum_ = 0;
 		resetAccumulation_ = false;
 	}
 
@@ -137,6 +139,7 @@ void RayTracer::DrawFrame()
 	// Keep track of our sample count.
 	numberOfSamples_ = glm::clamp(userSettings_.MaxNumberOfSamples - totalNumberOfSamples_, 0u, userSettings_.NumberOfSamples);
 	totalNumberOfSamples_ += numberOfSamples_;
+	frameNum_++;
 
 	Application::DrawFrame();
 }

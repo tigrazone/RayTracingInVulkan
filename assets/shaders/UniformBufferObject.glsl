@@ -9,6 +9,7 @@ struct UniformBufferObject
 	float FocusDistance;
 	float HeatmapScale;
 	uint TotalNumberOfSamples;
+	uint frameNum;
 	uint NumberOfSamples;
 	uint NumberOfBounces;
 	uint RandomSeed;
