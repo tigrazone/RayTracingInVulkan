@@ -104,6 +104,7 @@ namespace
 		userSettings.NumberOfSamples = options.Samples;
 		userSettings.NumberOfBounces = options.Bounces;
 		userSettings.MaxNumberOfSamples = options.MaxSamples;
+		userSettings.RR_MIN_DEPTHeye = options.RR_MIN_DEPTHeye;
 
 		userSettings.ShowSettings = !options.Benchmark;
 		userSettings.ShowOverlay = true;

@@ -13,9 +13,11 @@ layout(binding = 0, set = 0) uniform accelerationStructureEXT Scene;
 layout(binding = 1, rgba32f) uniform image2D AccumulationImage;
 layout(binding = 2, rgba8) uniform image2D OutputImage;
 layout(binding = 3) readonly uniform UniformBufferObjectStruct { UniformBufferObject Camera; };
+layout(binding = 6) readonly buffer MaterialArray { Material[] Materials; };
 
 layout(location = 0) rayPayloadEXT RayPayload Ray;
 
+#define luminance(rgb) (dot((rgb), vec3(0.2126f, 0.7152f, 0.0722f)))
 
 #define _epsilon_ 0.0000152587890625F
 
@@ -56,7 +58,8 @@ void main()
 		vec3 rayColor = vec3(1);
 
 		// Ray scatters are handled in this loop. There are no recursive traceRayEXT() calls in other shaders.
-		for (uint b = 0; b <= Camera.NumberOfBounces; ++b)
+		uint b = 0;
+		for (; b <= Camera.NumberOfBounces; ++b)
 		{
 			const float tMin = 0.001;
 			const float tMax = 10000.0;
@@ -84,6 +87,18 @@ void main()
 			if (t < 0 || !isScattered)
 			{				
 				break;
+			}
+
+			if (b >= Camera.RR_MIN_DEPTHeye) {
+				const Material material = Materials[Ray.MaterialIndex];
+				float rr_scale =  material.MaterialModel == MaterialDielectric ?
+					(Ray.side ? material.RefractionIndex : 1.0 / material.RefractionIndex) :  1.0;
+
+			    float rr_prob = min(0.95f, luminance(rayColor) * rr_scale);
+			    if (rr_prob < RandomFloat(Ray.RandomSeed))
+			        break;
+
+			    rayColor *= min( 1.f / rr_prob, 20.f );
 			}
 
 			// Trace hit.

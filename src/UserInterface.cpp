@@ -203,6 +203,8 @@ void UserInterface::DrawSettings()
 		ImGui::SliderScalar("Samples", ImGuiDataType_U32, &Settings().NumberOfSamples, &min, &max);
 		min = 1, max = 32;
 		ImGui::SliderScalar("Bounces", ImGuiDataType_U32, &Settings().NumberOfBounces, &min, &max);
+		min = 1, max = Settings().NumberOfBounces + 1;
+		ImGui::SliderScalar("Russian Roulette start from", ImGuiDataType_U32, &Settings().RR_MIN_DEPTHeye, &min, &max);
 		ImGui::NewLine();
 
 		ImGui::Text("Camera");

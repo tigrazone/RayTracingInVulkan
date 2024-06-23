@@ -1,6 +1,9 @@
 #include "ModelViewController.hpp"
 #include "Vulkan/Vulkan.hpp"
 
+#define e_5 0.00001f
+#define NEARzero e_5
+#define isZERO(x) ((x)>-NEARzero && (x)<NEARzero)
 void ModelViewController::Reset(const glm::mat4& modelView)
 {
 	const auto inverse = glm::inverse(modelView);
@@ -106,8 +109,8 @@ bool ModelViewController::UpdateCamera(const double speed, const double timeDelt
 		cameraMovingForward_ ||
 		cameraMovingDown_ ||
 		cameraMovingUp_ ||
-		cameraRotY_ != 0 ||
-		cameraRotX_ != 0;
+		!isZERO(cameraRotY_) ||
+		!isZERO(cameraRotX_);
 
 	cameraRotY_ = 0;
 	cameraRotX_ = 0;

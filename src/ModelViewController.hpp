@@ -14,10 +14,10 @@ public:
 	bool OnCursorPosition(double xpos, double ypos);
 	bool OnMouseButton(int button, int action, int mods);
 	bool UpdateCamera(double speed, double timeDelta);
+	void MoveForward(float d);
 
 private:
 
-	void MoveForward(float d);
 	void MoveRight(float d);
 	void MoveUp(float d);
 	void Rotate(float y, float x);

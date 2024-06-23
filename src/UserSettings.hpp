@@ -17,6 +17,7 @@ struct UserSettings final
 	bool AccumulateRays;
 	uint32_t NumberOfSamples;
 	uint32_t NumberOfBounces;
+	uint32_t RR_MIN_DEPTHeye;
 	uint32_t MaxNumberOfSamples;
 
 	// Camera
@@ -42,6 +43,7 @@ struct UserSettings final
 			AccumulateRays != prev.AccumulateRays ||
 			NumberOfBounces != prev.NumberOfBounces ||
 			NumberOfSamples != prev.NumberOfSamples ||
+			RR_MIN_DEPTHeye != prev.RR_MIN_DEPTHeye ||
 			FieldOfView != prev.FieldOfView ||
 			Aperture != prev.Aperture ||
 			FocusDistance != prev.FocusDistance;

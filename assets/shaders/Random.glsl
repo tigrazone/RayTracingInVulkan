@@ -1,25 +1,33 @@
 #extension GL_EXT_control_flow_attributes : require
 
-void pcg4d(inout uvec4 v)
-{
-    v = v * 1664525u + 1013904223u;
-    v.x += v.y * v.w; v.y += v.z * v.x; v.z += v.x * v.y; v.w += v.y * v.z;
-    v = v ^ (v >> 16u);
-    v.x += v.y * v.w; v.y += v.z * v.x; v.z += v.x * v.y; v.w += v.y * v.z;
-}
+#define pcg4d(v) \
+	v = v * 1664525u + 1013904223u; \
+	v.x += v.y * v.w;	\
+	v.y += v.z * v.x;	\
+	v.z += v.x * v.y;	\
+	v.w += v.y * v.z;	\
+	v = v ^ (v >> 16u);	\
+	v.x += v.y * v.w;	\
+	v.y += v.z * v.x;	\
+	v.z += v.x * v.y;	\
+	v.w += v.y * v.z
+
 
 // Returns a float between 0 and 1
-float uint_to_float(uint x) { return uintBitsToFloat(0x3f800000 | (x >> 9)) - 1.0f; }
+#define uint_to_float(x) ( uintBitsToFloat(0x3f800000 | ((x) >> 9)) - 1.0f )
 
-uvec4 InitRandomSeed(uint val0, uint val1, uint frame_num)
-{
-	return uvec4(val0, val1, frame_num, 0);
-}
+#define InitRandomSeed(val0, val1, frame_num) ( uvec4(val0, val1, frame_num, 0) )
 
 float RandomFloat(inout uvec4 v)
 {
 	pcg4d(v);
 	return uint_to_float(v.x);
+}
+
+vec2 RandomFloat2(inout uvec4 v)
+{
+	pcg4d(v);
+	return uint_to_float(v.xy);
 }
 
 #define e_5		0.00001f
@@ -49,23 +57,20 @@ vec2 concentric_sample_disk(vec2 offset) {
 
 vec2 RandomInUnitDisk(inout uvec4 seed)
 {
-	return concentric_sample_disk( vec2( RandomFloat(seed), RandomFloat(seed) ) );
+	return concentric_sample_disk( RandomFloat2(seed) );
 }
 
-vec3 UniformSampleSphere(float r1, float r2)
+vec3 UniformSampleSphere(vec2 xi)
 {
-    float z = 1.0 - 2.0 * r1;
-    float r = sqrt(max(0.0, 1.0 - z * z));
-    float phi = TWO_PI * r2;
-    return vec3(r * cos(phi), r * sin(phi), z);
+    float z = 1.0 - xi.x - xi.x;
+    float phi = TWO_PI * xi.y;
+    return vec3(sqrt(max(0.0, 1.0 - z * z)) * vec2(cos(phi), sin(phi)), z);
 }
 
 vec3 RandomInUnitSphere(inout uvec4 seed)
 {
-	return UniformSampleSphere(RandomFloat(seed), RandomFloat(seed));
+	return UniformSampleSphere(RandomFloat2(seed));
 }
-
-#define ToWorld(T, B, N, v) (mat3((T), (B), (N)) * (v))
 
 void Onb(vec3 n, out vec3 b1, out vec3 b2) {
 	float sign = n.z > 0.f ? 1.f : -1.f;
@@ -74,12 +79,12 @@ void Onb(vec3 n, out vec3 b1, out vec3 b2) {
 	b1 = vec3(1.f + sign * n.x * n.x * a, sign * b2.x, -sign * n.x);
 }
 
-vec3 CosineSampleHemisphere(float r1, float r2)
+vec3 CosineSampleHemisphere(vec2 xi)
 {
     vec3 dir;
 
-    float phi = TWO_PI * r2;
-    dir.xy = sqrt(r1) * vec2(cos(phi), sin(phi));
-    dir.z = sqrt(max(0.0, 1.0 - dir.x * dir.x - dir.y * dir.y));
+    float phi = TWO_PI * xi.y;
+    dir.xy = sqrt(xi.x) * vec2(cos(phi), sin(phi));
+    dir.z = sqrt(max(0.0, 1.0 - dot(dir.xy, dir.xy)));
     return dir;
 }

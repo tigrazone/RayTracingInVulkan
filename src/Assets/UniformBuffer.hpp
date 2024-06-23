@@ -24,7 +24,8 @@ namespace Assets
 		float FocusDistance;
 		float HeatmapScale;
 		uint32_t TotalNumberOfSamples;
-		uint32_t frameNum;
+		uint32_t frameNum; 
+		uint32_t RR_MIN_DEPTHeye;
 		uint32_t NumberOfSamples;
 		uint32_t NumberOfBounces;
 		uint32_t RandomSeed;

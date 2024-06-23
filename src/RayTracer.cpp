@@ -49,6 +49,7 @@ Assets::UniformBufferObject RayTracer::GetUniformBufferObject(const VkExtent2D e
 	ubo.FocusDistance = userSettings_.FocusDistance;
 	ubo.TotalNumberOfSamples = totalNumberOfSamples_;
 	ubo.frameNum = frameNum_;
+	ubo.RR_MIN_DEPTHeye = userSettings_.RR_MIN_DEPTHeye;
 	ubo.NumberOfSamples = numberOfSamples_;
 	ubo.NumberOfBounces = userSettings_.NumberOfBounces;
 	ubo.RandomSeed = rand();
@@ -254,13 +255,8 @@ void RayTracer::OnScroll(const double xoffset, const double yoffset)
 		return;
 	}
 
-	const auto prevFov = userSettings_.FieldOfView;
-	userSettings_.FieldOfView = std::clamp(
-		static_cast<float>(prevFov - yoffset),
-		UserSettings::FieldOfViewMinValue,
-		UserSettings::FieldOfViewMaxValue);
-
-	resetAccumulation_ = prevFov != userSettings_.FieldOfView;
+    modelViewController_.MoveForward(yoffset);
+	resetAccumulation_ = true;
 }
 
 void RayTracer::LoadScene(const uint32_t sceneIndex)

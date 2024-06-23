@@ -10,6 +10,7 @@ struct UniformBufferObject
 	float HeatmapScale;
 	uint TotalNumberOfSamples;
 	uint frameNum;
+	uint RR_MIN_DEPTHeye;
 	uint NumberOfSamples;
 	uint NumberOfBounces;
 	uint RandomSeed;

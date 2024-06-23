@@ -1,9 +1,10 @@
+#ifndef MATERIALS_GLSL
 
-const uint MaterialLambertian = 0;
-const uint MaterialMetallic = 1;
-const uint MaterialDielectric = 2;
-const uint MaterialIsotropic = 3;
-const uint MaterialDiffuseLight = 4;
+#define MaterialLambertian		0
+#define MaterialMetallic		1
+#define MaterialDielectric		2
+#define MaterialIsotropic		3
+#define MaterialDiffuseLight	4
 
 struct Material
 {
@@ -13,3 +14,6 @@ struct Material
 	float RefractionIndex;
 	uint MaterialModel;
 };
+
+#define MATERIALS_GLSL
+#endif
